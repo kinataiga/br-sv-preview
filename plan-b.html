@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>PLAN B : Full Abstract - Brainary Second View Prototype</title>
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: auto; }
+body {
+  background: #0a0a1a;
+  color: #fff;
+  font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+  overflow-x: hidden;
+}
+
+/* Background Video */
+.bg-video {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 0;
+  opacity: 0.3;
+  pointer-events: none;
+}
+.bg-video video {
+  width: 100%; height: 100%;
+  object-fit: cover;
+}
+
+/* Scroll Spacer */
+.scroll-spacer {
+  height: 1200vh;
+  position: relative;
+  z-index: 1;
+}
+
+/* Sticky Wrap */
+.sticky-wrap {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  height: 100vh;
+  z-index: 2;
+  overflow: hidden;
+}
+
+/* Canvas */
+#mainCanvas {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 1;
+}
+
+/* Plan Label */
+.plan-label {
+  position: fixed;
+  top: 20px; right: 24px;
+  z-index: 100;
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  color: rgba(255,255,255,0.4);
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+/* Progress Bar */
+.progress-bar {
+  position: fixed;
+  top: 0; left: 0;
+  height: 2px;
+  background: linear-gradient(90deg, rgba(74,127,255,0.8), rgba(134,100,255,0.8), rgba(61,191,153,0.8), rgba(255,132,100,0.8));
+  z-index: 200;
+  width: 0%;
+  transition: width 0.05s linear;
+}
+
+/* Step Text Overlay */
+.step-overlay {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  pointer-events: none;
+  text-align: center;
+  padding: 0 24px;
+}
+.step-label {
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.35);
+  margin-bottom: 12px;
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.step-title {
+  font-size: clamp(20px, 3.5vw, 42px);
+  font-weight: 300;
+  line-height: 1.6;
+  letter-spacing: 0.04em;
+  color: rgba(255,255,255,0.88);
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.7s ease 0.15s, transform 0.7s ease 0.15s;
+  max-width: 680px;
+}
+.step-overlay.active .step-label,
+.step-overlay.active .step-title {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* CTA */
+.cta-link {
+  display: inline-block;
+  margin-top: 32px;
+  padding: 14px 48px;
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 40px;
+  color: rgba(255,255,255,0.8);
+  text-decoration: none;
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  pointer-events: auto;
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.6s ease 0.4s, transform 0.6s ease 0.4s, border-color 0.3s, color 0.3s;
+}
+.step-overlay.active .cta-link {
+  opacity: 1;
+  transform: translateY(0);
+}
+.cta-link:hover {
+  border-color: rgba(255,255,255,0.6);
+  color: #fff;
+}
+
+/* SP */
+@media (max-width: 768px) {
+  .plan-label {
+    top: 12px; right: 14px;
+    font-size: 9px;
+  }
+  .step-label { font-size: 9px; }
+  .step-title { font-size: clamp(16px, 5vw, 24px); }
+  .cta-link { padding: 12px 32px; font-size: 12px; }
+}
+</style>
+</head>
+<body>
+
+<div class="bg-video">
+  <video autoplay muted loop playsinline>
+    <source src="https://brainary.tokyo/wp-content/themes/brainary/assets/imgs/mv4.mp4" type="video/mp4">
+  </video>
+</div>
+
+<div class="plan-label">PLAN B : Full Abstract</div>
+<div class="progress-bar" id="progressBar"></div>
+
+<div class="scroll-spacer">
+  <div class="sticky-wrap">
+    <canvas id="mainCanvas"></canvas>
+
+    <div class="step-overlay" id="step0">
+      <div class="step-label">Step 1 &mdash; OBSERVE</div>
+      <div class="step-title">In All Chaos,<br>There is a Cosmos.</div>
+    </div>
+    <div class="step-overlay" id="step1">
+      <div class="step-label">Step 2 &mdash; EXTRACT</div>
+      <div class="step-title">要素を抜き出し、タグを付ける。</div>
+    </div>
+    <div class="step-overlay" id="step2">
+      <div class="step-label">Step 3 &mdash; SYNTHESIZE</div>
+      <div class="step-title">ぶつける。重ねる。<br>共通項が、浮かぶ。</div>
+    </div>
+    <div class="step-overlay" id="step3">
+      <div class="step-label">Step 4 &mdash; CENTER PIN</div>
+      <div class="step-title">これが、売れる理由だ。</div>
+    </div>
+    <div class="step-overlay" id="step4">
+      <div class="step-label">Step 5 &mdash; REVERSE ENGINEER</div>
+      <div class="step-title">センターピンから、逆算する。</div>
+    </div>
+    <div class="step-overlay" id="step5">
+      <div class="step-label">Step 6 &mdash; Closing</div>
+      <div class="step-title">発見したセンターピンから、<br>戦略も実行も逆算する。</div>
+      <a href="https://brainary.tokyo/contact" class="cta-link">Contact Us</a>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  "use strict";
+
+  // --- Config ---
+  const COLORS = [
+    [74, 127, 255],   // blue
+    [134, 100, 255],  // purple
+    [61, 191, 153],   // green
+    [255, 132, 100],  // red
+  ];
+  const PARTICLE_COUNT = 120;
+  const ENV_PARTICLE_COUNT = 20;
+  const CLUSTER_CENTERS = [
+    { x: 0.30, y: 0.32 },
+    { x: 0.70, y: 0.32 },
+    { x: 0.30, y: 0.68 },
+    { x: 0.70, y: 0.68 },
+  ];
+  const BRANCHES = [
+    { label: "戦略設計", angle: -Math.PI * 0.75 },
+    { label: "優先度設計", angle: -Math.PI * 0.25 },
+    { label: "統合実行", angle: Math.PI * 0.5 },
+  ];
+
+  // --- Phase thresholds (normalized 0-1) ---
+  // appear → colorize → cluster → attract → converge → pinForm → branchGrow → fadeAll
+  const P = {
+    appear:     [0.00, 0.10],
+    colorize:   [0.10, 0.22],
+    cluster:    [0.22, 0.38],
+    attract:    [0.38, 0.50],
+    converge:   [0.50, 0.62],
+    pinForm:    [0.62, 0.74],
+    branchGrow: [0.74, 0.88],
+    fadeAll:     [0.88, 1.00],
+  };
+
+  // Step text visibility ranges
+  const STEPS = [
+    [0.00, 0.18],  // step0 OBSERVE
+    [0.14, 0.32],  // step1 EXTRACT
+    [0.30, 0.46],  // step2 SYNTHESIZE
+    [0.44, 0.64],  // step3 CENTER PIN
+    [0.62, 0.80],  // step4 REVERSE ENGINEER
+    [0.78, 1.00],  // step5 Closing
+  ];
+
+  // --- Canvas Setup ---
+  const canvas = document.getElementById("mainCanvas");
+  const ctx = canvas.getContext("2d");
+  let W, H, dpr;
+
+  function resize() {
+    dpr = window.devicePixelRatio || 1;
+    W = window.innerWidth;
+    H = window.innerHeight;
+    canvas.width = W * dpr;
+    canvas.height = H * dpr;
+    canvas.style.width = W + "px";
+    canvas.style.height = H + "px";
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  window.addEventListener("resize", resize);
+  resize();
+
+  // --- Particles ---
+  function createParticle(i) {
+    const cat = i % 4;
+    return {
+      cat: cat,
+      // random spawn position
+      ox: Math.random() * W,
+      oy: Math.random() * H,
+      x: Math.random() * W,
+      y: Math.random() * H,
+      vx: (Math.random() - 0.5) * 0.4,
+      vy: (Math.random() - 0.5) * 0.4,
+      r: 2 + Math.random() * 2.5,
+      phase: Math.random() * Math.PI * 2,
+      // current visual
+      alpha: 0,
+      colorMix: 0, // 0=white, 1=category color
+    };
+  }
+
+  let particles = [];
+  for (let i = 0; i < PARTICLE_COUNT; i++) particles.push(createParticle(i));
+
+  // Environment particles (always floating, small)
+  let envParticles = [];
+  for (let i = 0; i < ENV_PARTICLE_COUNT; i++) {
+    envParticles.push({
+      x: Math.random() * W,
+      y: Math.random() * H,
+      vx: (Math.random() - 0.5) * 0.2,
+      vy: (Math.random() - 0.5) * 0.15,
+      r: 0.8 + Math.random() * 0.8,
+      alpha: 0.12 + Math.random() * 0.15,
+      phase: Math.random() * Math.PI * 2,
+    });
+  }
+
+  // --- Utility ---
+  function lerp(a, b, t) { return a + (b - a) * t; }
+  function clamp01(v) { return Math.max(0, Math.min(1, v)); }
+  function phaseT(scroll, range) {
+    return clamp01((scroll - range[0]) / (range[1] - range[0]));
+  }
+  function easeInOut(t) { return t < 0.5 ? 2*t*t : -1+(4-2*t)*t; }
+  function easeOut(t) { return 1 - Math.pow(1 - t, 3); }
+
+  function colorStr(cat, mix, alpha) {
+    const c = COLORS[cat];
+    const r = Math.round(lerp(200, c[0], mix));
+    const g = Math.round(lerp(200, c[1], mix));
+    const b = Math.round(lerp(200, c[2], mix));
+    return "rgba(" + r + "," + g + "," + b + "," + alpha + ")";
+  }
+
+  // --- Scroll ---
+  let scrollT = 0;
+  function updateScroll() {
+    const spacer = document.querySelector(".scroll-spacer");
+    const maxScroll = spacer.scrollHeight - window.innerHeight;
+    scrollT = clamp01(window.scrollY / maxScroll);
+    document.getElementById("progressBar").style.width = (scrollT * 100) + "%";
+  }
+  window.addEventListener("scroll", updateScroll, { passive: true });
+
+  // --- Step Text ---
+  const stepEls = [];
+  for (let i = 0; i < 6; i++) stepEls.push(document.getElementById("step" + i));
+
+  function updateSteps() {
+    for (let i = 0; i < 6; i++) {
+      const s = STEPS[i];
+      const visible = scrollT >= s[0] && scrollT <= s[1];
+      if (visible) stepEls[i].classList.add("active");
+      else stepEls[i].classList.remove("active");
+    }
+  }
+
+  // --- Draw ---
+  let time = 0;
+
+  function draw() {
+    time += 0.016;
+    ctx.clearRect(0, 0, W, H);
+
+    const tAppear = easeOut(phaseT(scrollT, P.appear));
+    const tColor = easeInOut(phaseT(scrollT, P.colorize));
+    const tCluster = easeInOut(phaseT(scrollT, P.cluster));
+    const tAttract = easeInOut(phaseT(scrollT, P.attract));
+    const tConverge = easeInOut(phaseT(scrollT, P.converge));
+    const tPin = easeInOut(phaseT(scrollT, P.pinForm));
+    const tBranch = easeInOut(phaseT(scrollT, P.branchGrow));
+    const tFade = easeInOut(phaseT(scrollT, P.fadeAll));
+
+    const cx = W * 0.5;
+    const cy = H * 0.5;
+
+    // --- Update + draw environment particles ---
+    for (let i = 0; i < envParticles.length; i++) {
+      const ep = envParticles[i];
+      ep.x += ep.vx + Math.sin(time + ep.phase) * 0.08;
+      ep.y += ep.vy + Math.cos(time * 0.7 + ep.phase) * 0.06;
+      if (ep.x < 0) ep.x = W; if (ep.x > W) ep.x = 0;
+      if (ep.y < 0) ep.y = H; if (ep.y > H) ep.y = 0;
+      ctx.beginPath();
+      ctx.arc(ep.x, ep.y, ep.r, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(255,255,255," + (ep.alpha * (1 - tFade * 0.6)) + ")";
+      ctx.fill();
+    }
+
+    // --- Update main particles ---
+    for (let i = 0; i < particles.length; i++) {
+      const p = particles[i];
+      const cc = CLUSTER_CENTERS[p.cat];
+      const clusterX = cc.x * W;
+      const clusterY = cc.y * H;
+
+      // Phase: appear
+      p.alpha = tAppear * (1 - tFade);
+      // Phase: colorize
+      p.colorMix = tColor;
+
+      // Drift
+      p.phase += 0.005;
+      let driftX = Math.sin(time * 0.3 + p.phase) * 0.5;
+      let driftY = Math.cos(time * 0.25 + p.phase * 1.3) * 0.4;
+
+      // Target position calculation
+      let tx = p.ox + driftX;
+      let ty = p.oy + driftY;
+
+      // Cluster phase: move toward cluster center
+      if (tCluster > 0) {
+        tx = lerp(tx, clusterX + (p.ox - cx) * 0.18, tCluster);
+        ty = lerp(ty, clusterY + (p.oy - cy) * 0.18, tCluster);
+      }
+
+      // Converge: all toward center
+      if (tConverge > 0) {
+        tx = lerp(tx, cx + (Math.random() - 0.5) * 20, tConverge);
+        ty = lerp(ty, cy + (Math.random() - 0.5) * 20, tConverge);
+      }
+
+      // Pin form: tight center
+      if (tPin > 0) {
+        tx = lerp(tx, cx, tPin * 0.95);
+        ty = lerp(ty, cy, tPin * 0.95);
+      }
+
+      p.x += (tx - p.x) * 0.06;
+      p.y += (ty - p.y) * 0.06;
+    }
+
+    // --- Draw cross-lines (synthesis) ---
+    if (tAttract > 0 && tConverge < 1) {
+      ctx.lineWidth = 0.5;
+      const lineAlpha = tAttract * 0.15 * (1 - tConverge) * (1 - tFade);
+      for (let i = 0; i < particles.length; i += 3) {
+        for (let j = i + 1; j < particles.length; j += 5) {
+          if (particles[i].cat === particles[j].cat) continue;
+          const dx = particles[i].x - particles[j].x;
+          const dy = particles[i].y - particles[j].y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 120) {
+            const a = lineAlpha * (1 - dist / 120);
+            ctx.strokeStyle = "rgba(255,255,255," + a + ")";
+            ctx.beginPath();
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.stroke();
+          }
+        }
+      }
+    }
+
+    // --- Draw intra-cluster lines (attract phase) ---
+    if (tAttract > 0 && tFade < 1) {
+      ctx.lineWidth = 0.6;
+      for (let i = 0; i < particles.length; i += 2) {
+        for (let j = i + 1; j < particles.length; j += 3) {
+          if (particles[i].cat !== particles[j].cat) continue;
+          const dx = particles[i].x - particles[j].x;
+          const dy = particles[i].y - particles[j].y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          const maxDist = lerp(80, 200, tConverge);
+          if (dist < maxDist) {
+            const a = tAttract * 0.18 * (1 - dist / maxDist) * (1 - tFade);
+            const col = COLORS[particles[i].cat];
+            ctx.strokeStyle = "rgba(" + col[0] + "," + col[1] + "," + col[2] + "," + a + ")";
+            ctx.beginPath();
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.stroke();
+          }
+        }
+      }
+    }
+
+    // --- Draw particles ---
+    for (let i = 0; i < particles.length; i++) {
+      const p = particles[i];
+      if (p.alpha < 0.01) continue;
+
+      // Glow
+      const glowR = p.r * (2 + tConverge * 2);
+      const col = COLORS[p.cat];
+      const gr = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, glowR);
+      const baseAlpha = p.alpha * lerp(0.5, 0.8, p.colorMix);
+      gr.addColorStop(0, colorStr(p.cat, p.colorMix, baseAlpha));
+      gr.addColorStop(1, colorStr(p.cat, p.colorMix, 0));
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, glowR, 0, Math.PI * 2);
+      ctx.fillStyle = gr;
+      ctx.fill();
+
+      // Core
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r * lerp(1, 0.6, tPin), 0, Math.PI * 2);
+      ctx.fillStyle = colorStr(p.cat, p.colorMix, p.alpha);
+      ctx.fill();
+    }
+
+    // --- Center Pin (diamond) ---
+    if (tPin > 0 && tFade < 1) {
+      const pinSize = 14 * tPin;
+      const pinAlpha = tPin * (1 - tFade);
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.rotate(Math.PI / 4);
+      ctx.beginPath();
+      ctx.rect(-pinSize / 2, -pinSize / 2, pinSize, pinSize);
+      ctx.strokeStyle = "rgba(255,255,255," + (pinAlpha * 0.9) + ")";
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+      ctx.fillStyle = "rgba(255,255,255," + (pinAlpha * 0.15) + ")";
+      ctx.fill();
+      ctx.restore();
+
+      // Outer ring pulse
+      const ringR = 24 + Math.sin(time * 2) * 4;
+      ctx.beginPath();
+      ctx.arc(cx, cy, ringR * tPin, 0, Math.PI * 2);
+      ctx.strokeStyle = "rgba(255,255,255," + (pinAlpha * 0.2) + ")";
+      ctx.lineWidth = 0.8;
+      ctx.stroke();
+    }
+
+    // --- Branches ---
+    if (tBranch > 0 && tFade < 1) {
+      const branchAlpha = tBranch * (1 - tFade);
+      const branchLen = lerp(0, Math.min(W, H) * 0.28, tBranch);
+
+      ctx.save();
+      for (let i = 0; i < BRANCHES.length; i++) {
+        const b = BRANCHES[i];
+        const endX = cx + Math.cos(b.angle) * branchLen;
+        const endY = cy + Math.sin(b.angle) * branchLen;
+
+        // Dashed branch line
+        ctx.setLineDash([6, 4]);
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = "rgba(255,255,255," + (branchAlpha * 0.45) + ")";
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(endX, endY);
+        ctx.stroke();
+
+        // Branch endpoint circle
+        ctx.setLineDash([]);
+        ctx.beginPath();
+        ctx.arc(endX, endY, 4, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(255,255,255," + (branchAlpha * 0.5) + ")";
+        ctx.fill();
+
+        // Label
+        ctx.font = (W < 768 ? "10px" : "12px") + " 'Helvetica Neue', sans-serif";
+        ctx.fillStyle = "rgba(255,255,255," + (branchAlpha * 0.6) + ")";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        const labelX = endX + Math.cos(b.angle) * 18;
+        const labelY = endY + Math.sin(b.angle) * 18;
+        ctx.fillText(b.label, labelX, labelY);
+      }
+      ctx.restore();
+    }
+
+    updateSteps();
+    requestAnimationFrame(draw);
+  }
+
+  requestAnimationFrame(draw);
+})();
+</script>
+</body>
+</html>

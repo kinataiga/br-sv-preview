@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Plan C - Typography + Minimal Motion | Brainary SV</title>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Noto Sans JP','Helvetica Neue',Arial,sans-serif;
+  background:#0a0a1a;
+  color:#fff;
+  overflow-x:hidden;
+}
+
+/* Plan label */
+.plan-label{
+  position:fixed;top:12px;right:16px;z-index:200;
+  font-size:11px;letter-spacing:.15em;
+  color:rgba(180,210,255,.5);
+  background:rgba(10,10,26,.8);
+  padding:6px 14px;border-radius:20px;
+  border:1px solid rgba(80,120,255,.15);
+}
+
+/* Progress bar */
+.progress-bar{
+  position:fixed;top:0;left:0;
+  width:0%;height:2px;
+  background:linear-gradient(90deg,rgba(74,127,255,.8),rgba(124,90,255,.8),rgba(61,191,143,.8));
+  z-index:300;
+  transition:width .1s linear;
+}
+
+/* Scroll spacer & sticky */
+.scroll-spacer{height:1200vh;position:relative}
+.sticky-wrap{
+  position:sticky;top:0;
+  width:100%;height:100vh;
+  overflow:hidden;
+  background:#0a0a1a;
+}
+
+/* Background video */
+#bgVideo{
+  position:absolute;inset:0;
+  width:100%;height:100%;
+  object-fit:cover;z-index:0;opacity:.25;
+}
+.video-overlay{
+  position:absolute;inset:0;z-index:1;
+  background:radial-gradient(ellipse at center,rgba(10,10,26,.3) 0%,rgba(10,10,26,.85) 70%);
+}
+
+/* Keyword tags layer */
+.kw-layer{
+  position:absolute;inset:0;z-index:2;
+  pointer-events:none;
+}
+.kw-tag{
+  position:absolute;
+  font-size:13px;
+  font-weight:400;
+  letter-spacing:.05em;
+  white-space:nowrap;
+  opacity:0;
+  color:rgba(255,255,255,.6);
+  transition:
+    opacity .8s cubic-bezier(.23,1,.32,1),
+    color .8s cubic-bezier(.23,1,.32,1),
+    transform 1.2s cubic-bezier(.23,1,.32,1),
+    filter .8s ease;
+  will-change:transform,opacity,color,filter;
+  filter:blur(0px);
+}
+
+/* Text overlays */
+.text-overlay{
+  position:absolute;inset:0;
+  display:flex;align-items:center;justify-content:center;
+  flex-direction:column;gap:14px;
+  z-index:5;opacity:0;pointer-events:none;
+  transition:opacity 1s cubic-bezier(.23,1,.32,1);
+}
+.text-overlay.active{opacity:1}
+.step-label{
+  font-size:clamp(10px,1.2vw,13px);
+  letter-spacing:.35em;
+  color:rgba(140,180,255,.55);
+}
+.step-copy{
+  font-size:clamp(14px,2.2vw,26px);
+  font-weight:300;letter-spacing:.08em;line-height:2;
+  text-align:center;color:rgba(255,255,255,.88);
+  max-width:680px;padding:0 24px;
+}
+.step-copy .hl{color:rgba(180,210,255,1);font-weight:400}
+#stepCenterPin .step-copy{
+  font-size:clamp(22px,3.4vw,40px);
+  font-weight:400;letter-spacing:.12em;
+}
+.t-cta{
+  display:inline-block;margin-top:20px;
+  font-size:clamp(11px,1.2vw,14px);
+  letter-spacing:.2em;
+  color:rgba(140,180,255,.6);
+  text-decoration:none;
+  border-bottom:1px solid rgba(140,180,255,.2);
+  padding-bottom:3px;
+  pointer-events:auto;
+  transition:color .3s,border-color .3s;
+}
+.t-cta:hover{color:rgba(180,210,255,.9);border-color:rgba(180,210,255,.5)}
+
+/* CSS Diamond Pin */
+.pin-container{
+  position:absolute;inset:0;z-index:4;
+  display:flex;align-items:center;justify-content:center;
+  pointer-events:none;
+  opacity:0;
+  transition:opacity 1s cubic-bezier(.23,1,.32,1);
+}
+.pin-container.active{opacity:1}
+
+.diamond{
+  width:48px;height:48px;
+  position:relative;
+  transform:rotate(45deg);
+}
+.diamond::before{
+  content:'';
+  position:absolute;inset:0;
+  border:2px solid rgba(180,210,255,.7);
+  border-radius:4px;
+  background:rgba(74,127,255,.08);
+}
+.diamond::after{
+  content:'';
+  position:absolute;
+  top:50%;left:50%;
+  width:8px;height:8px;
+  background:rgba(180,210,255,.9);
+  border-radius:50%;
+  transform:translate(-50%,-50%) rotate(-45deg);
+}
+
+/* CSS Branch lines */
+.branch-container{
+  position:absolute;inset:0;z-index:3;
+  display:flex;align-items:center;justify-content:center;
+  pointer-events:none;
+  opacity:0;
+  transition:opacity 1s cubic-bezier(.23,1,.32,1);
+}
+.branch-container.active{opacity:1}
+
+.branch-line{
+  position:absolute;
+  width:2px;height:0;
+  background:linear-gradient(to bottom,rgba(180,210,255,.5),rgba(180,210,255,.1));
+  transform-origin:top center;
+  transition:height 1.2s cubic-bezier(.23,1,.32,1);
+}
+.branch-line.active{height:120px}
+
+.branch-line:nth-child(1){transform:rotate(-40deg)}
+.branch-line:nth-child(2){transform:rotate(0deg)}
+.branch-line:nth-child(3){transform:rotate(40deg)}
+
+.branch-circle{
+  position:absolute;
+  width:80px;height:80px;
+  border-radius:50%;
+  border:1px solid rgba(180,210,255,.3);
+  background:rgba(10,10,26,.7);
+  display:flex;align-items:center;justify-content:center;
+  text-align:center;
+  font-size:10px;
+  letter-spacing:.1em;
+  color:rgba(180,210,255,.7);
+  line-height:1.5;
+  opacity:0;
+  transform:scale(.6);
+  transition:opacity .8s ease .4s, transform .8s cubic-bezier(.23,1,.32,1) .4s;
+}
+.branch-circle.active{opacity:1;transform:scale(1)}
+
+.branch-circle:nth-child(4){top:calc(50% + 80px);left:calc(50% - 180px)}
+.branch-circle:nth-child(5){top:calc(50% + 130px);left:calc(50% - 40px)}
+.branch-circle:nth-child(6){top:calc(50% + 80px);left:calc(50% + 100px)}
+
+/* Step counter */
+.step-counter{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
+  z-index:200;
+  display:flex;gap:8px;
+  opacity:.4;
+}
+.step-dot{
+  width:6px;height:6px;border-radius:50%;
+  background:rgba(255,255,255,.3);
+  transition:background .4s,transform .4s;
+}
+.step-dot.active{
+  background:rgba(140,180,255,.8);
+  transform:scale(1.4);
+}
+
+/* SP responsive */
+@media(max-width:768px){
+  .kw-tag{font-size:11px!important}
+  .branch-line.active{height:80px}
+  .branch-circle{
+    width:60px;height:60px;
+    font-size:8px;
+  }
+  .branch-circle:nth-child(4){top:calc(50% + 60px);left:calc(50% - 130px)}
+  .branch-circle:nth-child(5){top:calc(50% + 100px);left:calc(50% - 30px)}
+  .branch-circle:nth-child(6){top:calc(50% + 60px);left:calc(50% + 70px)}
+  .diamond{width:36px;height:36px}
+}
+</style>
+</head>
+<body>
+
+<div class="plan-label">PLAN C : Typography + Minimal</div>
+<div class="progress-bar" id="progressBar"></div>
+
+<div class="step-counter" id="stepCounter">
+  <div class="step-dot"></div>
+  <div class="step-dot"></div>
+  <div class="step-dot"></div>
+  <div class="step-dot"></div>
+  <div class="step-dot"></div>
+  <div class="step-dot"></div>
+</div>
+
+<div class="scroll-spacer">
+  <div class="sticky-wrap">
+    <video id="bgVideo" autoplay muted loop playsinline>
+      <source src="https://brainary.tokyo/wp-content/themes/brainary/assets/imgs/mv4.mp4" type="video/mp4">
+    </video>
+    <div class="video-overlay"></div>
+
+    <!-- Keyword tags layer (populated by JS) -->
+    <div class="kw-layer" id="kwLayer"></div>
+
+    <!-- Diamond pin (CSS only) -->
+    <div class="pin-container" id="pinContainer">
+      <div class="diamond"></div>
+    </div>
+
+    <!-- Branch lines (CSS only) -->
+    <div class="branch-container" id="branchContainer">
+      <div class="branch-line"></div>
+      <div class="branch-line"></div>
+      <div class="branch-line"></div>
+      <div class="branch-circle">戦略設計</div>
+      <div class="branch-circle">優先度設計</div>
+      <div class="branch-circle">統合実行</div>
+    </div>
+
+    <!-- Text overlays -->
+    <div class="text-overlay" id="stepObserve">
+      <span class="step-label">STEP 1 &mdash; OBSERVE</span>
+    </div>
+    <div class="text-overlay" id="stepExtract">
+      <span class="step-label">STEP 2 &mdash; EXTRACT</span>
+      <p class="step-copy">タグを付ける。<br>要素を、<span class="hl">抜き出す</span>。</p>
+    </div>
+    <div class="text-overlay" id="stepSynthesize">
+      <span class="step-label">STEP 3 &mdash; SYNTHESIZE</span>
+      <p class="step-copy">ぶつける。重ねる。<br><span class="hl">共通項</span>が、浮かぶ。</p>
+    </div>
+    <div class="text-overlay" id="stepCenterPin">
+      <span class="step-label">STEP 4 &mdash; CENTER PIN</span>
+      <p class="step-copy">これが、<span class="hl">売れる理由</span>だ。</p>
+    </div>
+    <div class="text-overlay" id="stepReverse">
+      <span class="step-label">STEP 5 &mdash; REVERSE ENGINEER</span>
+      <p class="step-copy">センターピンから、<span class="hl">逆算する</span>。</p>
+    </div>
+    <div class="text-overlay" id="stepClosing">
+      <span class="step-label">STEP 6 &mdash; CLOSING</span>
+      <p class="step-copy">発見したセンターピンから、<br><span class="hl">戦略も実行も逆算する</span>。</p>
+      <a href="https://brainary.tokyo" class="t-cta">VIEW MORE &rarr;</a>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  /* ── Keyword data ── */
+  const KW_DATA = [
+    // 商品系 blue
+    {text:'韓国コスメ',  cat:'product', color:'rgba(74,127,255,1)'},
+    {text:'美容液',      cat:'product', color:'rgba(74,127,255,1)'},
+    {text:'成分訴求',    cat:'product', color:'rgba(74,127,255,1)'},
+    {text:'CICA',        cat:'product', color:'rgba(74,127,255,1)'},
+    {text:'レチノール',  cat:'product', color:'rgba(74,127,255,1)'},
+    // CRM系 purple
+    {text:'定期2回目の壁', cat:'crm', color:'rgba(124,90,255,1)'},
+    {text:'同梱物',        cat:'crm', color:'rgba(124,90,255,1)'},
+    {text:'解約理由',      cat:'crm', color:'rgba(124,90,255,1)'},
+    {text:'お届けサイクル', cat:'crm', color:'rgba(124,90,255,1)'},
+    {text:'休眠復帰',      cat:'crm', color:'rgba(124,90,255,1)'},
+    // SNS系 green
+    {text:'ガチレビュー',    cat:'sns', color:'rgba(61,191,143,1)'},
+    {text:'ビフォーアフター', cat:'sns', color:'rgba(61,191,143,1)'},
+    {text:'Qoo10急上昇',     cat:'sns', color:'rgba(61,191,143,1)'},
+    {text:'朝キレイ習慣',    cat:'sns', color:'rgba(61,191,143,1)'},
+    // CX系 red
+    {text:'初回同梱体験',  cat:'cx', color:'rgba(255,122,90,1)'},
+    {text:'パケ買い',      cat:'cx', color:'rgba(255,122,90,1)'},
+    {text:'開封ワクワク感', cat:'cx', color:'rgba(255,122,90,1)'},
+    {text:'サンプル設計',  cat:'cx', color:'rgba(255,122,90,1)'},
+    {text:'お試し導線',    cat:'cx', color:'rgba(255,122,90,1)'},
+  ];
+
+  /* ── Group target positions (for "group" phase) ── */
+  const GROUP_POS = {
+    product: {x: 25, y: 35},
+    crm:     {x: 75, y: 35},
+    sns:     {x: 25, y: 65},
+    cx:      {x: 75, y: 65},
+  };
+
+  /* ── Seed random positions ── */
+  function seededRandom(i){
+    let s = i * 9301 + 49297;
+    return ((s * 233280) % 1e6) / 1e6;
+  }
+
+  const kwLayer = document.getElementById('kwLayer');
+  const tags = [];
+
+  KW_DATA.forEach(function(kw, i){
+    const el = document.createElement('div');
+    el.className = 'kw-tag';
+    el.textContent = kw.text;
+    /* Random start position */
+    const rx = 10 + seededRandom(i * 3 + 1) * 80;
+    const ry = 15 + seededRandom(i * 3 + 2) * 70;
+    el.style.left = rx + '%';
+    el.style.top = ry + '%';
+    el._baseX = rx;
+    el._baseY = ry;
+    el._cat = kw.cat;
+    el._color = kw.color;
+    /* Group target with slight scatter */
+    const gp = GROUP_POS[kw.cat];
+    const catIndex = KW_DATA.filter(function(k,j){return k.cat===kw.cat && j<i}).length;
+    el._groupX = gp.x + (catIndex % 3 - 1) * 8;
+    el._groupY = gp.y + (Math.floor(catIndex / 3) - 0.5) * 10;
+    kwLayer.appendChild(el);
+    tags.push(el);
+  });
+
+  /* ── Phase thresholds (normalized 0-1 across scroll-spacer) ── */
+  const PHASES = {
+    appear:     {start: 0.02, end: 0.12},
+    colorize:   {start: 0.14, end: 0.24},
+    group:      {start: 0.26, end: 0.38},
+    merge:      {start: 0.40, end: 0.52},
+    pinShow:    {start: 0.54, end: 0.64},
+    branchShow: {start: 0.66, end: 0.78},
+    fadeAll:     {start: 0.80, end: 0.90},
+  };
+
+  /* ── Step text mapping ── */
+  const STEP_ELEMENTS = [
+    document.getElementById('stepObserve'),
+    document.getElementById('stepExtract'),
+    document.getElementById('stepSynthesize'),
+    document.getElementById('stepCenterPin'),
+    document.getElementById('stepReverse'),
+    document.getElementById('stepClosing'),
+  ];
+
+  /* Phase -> step index */
+  function getStepIndex(p){
+    if(p < PHASES.colorize.start) return 0;
+    if(p < PHASES.group.start) return 1;
+    if(p < PHASES.merge.start) return 2;
+    if(p < PHASES.pinShow.start) return 3;
+    if(p < PHASES.branchShow.start) return 4;
+    return 5;
+  }
+
+  const progressBar = document.getElementById('progressBar');
+  const pinContainer = document.getElementById('pinContainer');
+  const branchContainer = document.getElementById('branchContainer');
+  const branchLines = branchContainer.querySelectorAll('.branch-line');
+  const branchCircles = branchContainer.querySelectorAll('.branch-circle');
+  const stepDots = document.querySelectorAll('.step-dot');
+
+  /* ── Lerp helper ── */
+  function lerp(a, b, t){ return a + (b - a) * Math.max(0, Math.min(1, t)); }
+  function phaseT(p, phase){
+    return (p - phase.start) / (phase.end - phase.start);
+  }
+
+  /* ── Main scroll handler ── */
+  let ticking = false;
+  function onScroll(){
+    if(ticking) return;
+    ticking = true;
+    requestAnimationFrame(function(){
+      ticking = false;
+      const spacer = document.querySelector('.scroll-spacer');
+      const rect = spacer.getBoundingClientRect();
+      const total = spacer.scrollHeight - window.innerHeight;
+      const scrolled = -rect.top;
+      const p = Math.max(0, Math.min(1, scrolled / total));
+
+      /* Progress bar */
+      progressBar.style.width = (p * 100) + '%';
+
+      /* Step dots */
+      const si = getStepIndex(p);
+      stepDots.forEach(function(dot, i){
+        dot.classList.toggle('active', i === si);
+      });
+
+      /* Step text overlays */
+      STEP_ELEMENTS.forEach(function(el, i){
+        el.classList.toggle('active', i === si);
+      });
+
+      /* ── Phase: appear ── */
+      const tAppear = phaseT(p, PHASES.appear);
+      tags.forEach(function(el, i){
+        const stagger = i / tags.length;
+        const localT = (tAppear - stagger * 0.5) / 0.5;
+        if(p < PHASES.appear.start){
+          el.style.opacity = '0';
+        } else if(p >= PHASES.appear.start && p < PHASES.fadeAll.start){
+          /* Will be refined by later phases */
+        }
+        if(p >= PHASES.appear.start && p < PHASES.colorize.start){
+          el.style.opacity = Math.max(0, Math.min(1, localT));
+          el.style.color = 'rgba(255,255,255,.6)';
+          el.style.transform = 'translate(0,0)';
+          el.style.filter = 'blur(0px)';
+        }
+      });
+
+      /* ── Phase: colorize ── */
+      if(p >= PHASES.colorize.start && p < PHASES.group.start){
+        const tColor = phaseT(p, PHASES.colorize);
+        tags.forEach(function(el){
+          el.style.opacity = '1';
+          const baseColor = 'rgba(255,255,255,.6)';
+          if(tColor > 0.3){
+            el.style.color = el._color;
+          } else {
+            el.style.color = baseColor;
+          }
+          el.style.transform = 'translate(0,0)';
+          el.style.filter = 'blur(0px)';
+        });
+      }
+
+      /* ── Phase: group ── */
+      if(p >= PHASES.group.start && p < PHASES.merge.start){
+        const tGroup = phaseT(p, PHASES.group);
+        tags.forEach(function(el){
+          el.style.opacity = '1';
+          el.style.color = el._color;
+          const dx = (el._groupX - el._baseX);
+          const dy = (el._groupY - el._baseY);
+          const vw = window.innerWidth / 100;
+          const vh = window.innerHeight / 100;
+          const tx = lerp(0, dx * vw, tGroup);
+          const ty = lerp(0, dy * vh, tGroup);
+          el.style.transform = 'translate(' + tx + 'px,' + ty + 'px)';
+          el.style.filter = 'blur(0px)';
+        });
+      }
+
+      /* ── Phase: merge (converge to center + blur + fade) ── */
+      if(p >= PHASES.merge.start && p < PHASES.pinShow.start){
+        const tMerge = phaseT(p, PHASES.merge);
+        tags.forEach(function(el){
+          const cx = 50;
+          const cy = 50;
+          const currentX = el._groupX;
+          const currentY = el._groupY;
+          const dx = (cx - el._baseX);
+          const dy = (cy - el._baseY);
+          const vw = window.innerWidth / 100;
+          const vh = window.innerHeight / 100;
+          /* From grouped position towards center */
+          const gdx = (el._groupX - el._baseX);
+          const gdy = (el._groupY - el._baseY);
+          const mdx = (cx - el._baseX);
+          const mdy = (cy - el._baseY);
+          const tx = lerp(gdx * vw, mdx * vw, tMerge);
+          const ty = lerp(gdy * vh, mdy * vh, tMerge);
+          el.style.transform = 'translate(' + tx + 'px,' + ty + 'px)';
+          el.style.opacity = lerp(1, 0, tMerge * 1.3);
+          el.style.filter = 'blur(' + lerp(0, 10, tMerge) + 'px)';
+          el.style.color = el._color;
+        });
+      }
+
+      /* ── Phase: pinShow ── */
+      if(p >= PHASES.pinShow.start){
+        tags.forEach(function(el){
+          el.style.opacity = '0';
+          el.style.filter = 'blur(10px)';
+        });
+      }
+      pinContainer.classList.toggle('active',
+        p >= PHASES.pinShow.start && p < PHASES.fadeAll.start
+      );
+
+      /* ── Phase: branchShow ── */
+      const branchActive = p >= PHASES.branchShow.start && p < PHASES.fadeAll.start;
+      branchContainer.classList.toggle('active', branchActive);
+      branchLines.forEach(function(l){ l.classList.toggle('active', branchActive); });
+      branchCircles.forEach(function(c){ c.classList.toggle('active', branchActive); });
+
+      /* ── Phase: fadeAll ── */
+      if(p >= PHASES.fadeAll.start){
+        const tFade = phaseT(p, PHASES.fadeAll);
+        pinContainer.style.opacity = lerp(1, 0, tFade);
+        branchContainer.style.opacity = lerp(1, 0, tFade);
+      } else if(p >= PHASES.pinShow.start){
+        pinContainer.style.opacity = '';
+        branchContainer.style.opacity = '';
+      }
+    });
+  }
+
+  window.addEventListener('scroll', onScroll, {passive: true});
+  onScroll();
+})();
+</script>
+</body>
+</html>

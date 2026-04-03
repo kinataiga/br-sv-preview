@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>PLAN A : Card + Particle | Brainary Second View Prototype</title>
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #0a0a1a;
+  --blue: #4a9eff;
+  --purple: #a855f7;
+  --green: #22c55e;
+  --red: #ef4444;
+  --gold: #f5c542;
+  --text: #e8e8f0;
+  --text-dim: #8888aa;
+  --card-bg: rgba(255,255,255,0.04);
+  --card-border: rgba(255,255,255,0.08);
+}
+
+html { scroll-behavior: auto; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Plan Label */
+.plan-label {
+  position: fixed; top: 20px; right: 24px; z-index: 1000;
+  font-size: 11px; letter-spacing: 0.15em; color: var(--text-dim);
+  background: rgba(10,10,26,0.7); backdrop-filter: blur(8px);
+  padding: 8px 16px; border: 1px solid var(--card-border); border-radius: 4px;
+}
+
+/* Progress Bar */
+.progress-bar {
+  position: fixed; top: 0; left: 0; width: 0%; height: 2px; z-index: 1000;
+  background: linear-gradient(90deg, var(--blue), var(--purple), var(--gold));
+  transition: width 0.1s linear;
+}
+
+/* Scroll Spacer */
+.scroll-spacer { height: 1200vh; position: relative; }
+
+/* Sticky Wrap */
+.sticky-wrap {
+  position: sticky; top: 0; width: 100%; height: 100vh;
+  overflow: hidden;
+}
+
+/* Video BG */
+.video-bg {
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+  object-fit: cover; opacity: 0; transition: opacity 1.5s ease;
+  z-index: 0;
+}
+.video-bg.visible { opacity: 0.18; }
+
+/* Canvas */
+#particleCanvas {
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+  z-index: 1;
+}
+
+/* Content Layer */
+.content-layer {
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+  z-index: 2; display: flex; align-items: center; justify-content: center;
+  pointer-events: none;
+}
+
+/* Step Display */
+.step-display {
+  text-align: center; opacity: 0; transform: translateY(30px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+  pointer-events: auto; max-width: 800px; padding: 0 24px;
+}
+.step-display.active { opacity: 1; transform: translateY(0); }
+
+.step-label {
+  font-size: 11px; letter-spacing: 0.3em; text-transform: uppercase;
+  color: var(--text-dim); margin-bottom: 12px;
+}
+.step-title {
+  font-size: clamp(28px, 4vw, 52px); font-weight: 700;
+  letter-spacing: 0.04em; line-height: 1.3; margin-bottom: 16px;
+}
+.step-body {
+  font-size: clamp(14px, 2vw, 20px); line-height: 1.8;
+  color: var(--text-dim); font-weight: 300;
+}
+
+/* Cards Container */
+.cards-container {
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+  z-index: 3; pointer-events: none;
+}
+.info-card {
+  position: absolute; padding: 12px 18px;
+  background: var(--card-bg); border: 1px solid var(--card-border);
+  border-radius: 10px; backdrop-filter: blur(12px);
+  font-size: 13px; white-space: nowrap;
+  opacity: 0; transform: scale(0.8);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+  pointer-events: none;
+}
+.info-card.visible { opacity: 1; transform: scale(1); }
+.info-card.dissolving {
+  opacity: 0; transform: scale(0.3);
+  transition: opacity 1.2s ease, transform 1.2s ease;
+}
+
+.card-dot {
+  display: inline-block; width: 7px; height: 7px; border-radius: 50%;
+  margin-right: 8px; vertical-align: middle;
+}
+.card-label { vertical-align: middle; color: var(--text); font-weight: 500; }
+
+/* Category Tags (Step 3) */
+.category-tags {
+  display: flex; gap: 12px; justify-content: center;
+  flex-wrap: wrap; margin-top: 24px;
+}
+.cat-tag {
+  padding: 6px 16px; border-radius: 20px; font-size: 13px;
+  letter-spacing: 0.05em; font-weight: 500;
+  background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
+}
+
+/* Branches (Step 5) */
+.branches {
+  display: flex; gap: 20px; justify-content: center;
+  flex-wrap: wrap; margin-top: 28px;
+}
+.branch-item {
+  padding: 10px 24px; border-radius: 8px; font-size: 14px;
+  font-weight: 600; letter-spacing: 0.06em;
+  background: rgba(245,197,66,0.08); border: 1px solid rgba(245,197,66,0.25);
+  color: var(--gold);
+}
+
+/* CTA */
+.cta-area { margin-top: 36px; }
+.cta-btn {
+  display: inline-block; padding: 14px 48px; border-radius: 6px;
+  background: linear-gradient(135deg, var(--gold), #e0a800);
+  color: var(--bg); font-size: 15px; font-weight: 700;
+  letter-spacing: 0.08em; text-decoration: none;
+  pointer-events: auto; transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.cta-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(245,197,66,0.3);
+}
+
+/* Center Pin Glow */
+.center-pin-glow {
+  position: absolute; top: 50%; left: 50%;
+  width: 0; height: 0; border-radius: 50%;
+  background: radial-gradient(circle, rgba(245,197,66,0.15), transparent 70%);
+  transform: translate(-50%, -50%);
+  transition: width 1.5s ease, height 1.5s ease;
+  z-index: 0; pointer-events: none;
+}
+
+/* SP */
+@media (max-width: 768px) {
+  .plan-label { font-size: 9px; padding: 6px 10px; top: 12px; right: 12px; }
+  .info-card { font-size: 11px; padding: 8px 12px; }
+  .category-tags { gap: 8px; }
+  .cat-tag { font-size: 11px; padding: 5px 12px; }
+  .branches { gap: 10px; }
+  .branch-item { font-size: 12px; padding: 8px 16px; }
+  .cta-btn { padding: 12px 32px; font-size: 13px; }
+}
+</style>
+</head>
+<body>
+
+<div class="plan-label">PLAN A : Card + Particle</div>
+<div class="progress-bar" id="progressBar"></div>
+
+<div class="scroll-spacer">
+  <div class="sticky-wrap">
+    <video class="video-bg" id="bgVideo" src="https://brainary.tokyo/wp-content/themes/brainary/assets/imgs/mv4.mp4" muted playsinline loop></video>
+    <canvas id="particleCanvas"></canvas>
+    <div class="center-pin-glow" id="centerGlow"></div>
+    <div class="cards-container" id="cardsContainer"></div>
+    <div class="content-layer">
+      <!-- Step 1 -->
+      <div class="step-display" id="step1">
+        <div class="step-label">Step 1</div>
+        <div class="step-title">OBSERVE</div>
+        <div class="step-body">日常の中の、無数の事象を観察する。</div>
+      </div>
+      <!-- Step 2 -->
+      <div class="step-display" id="step2">
+        <div class="step-label">Step 2</div>
+        <div class="step-title">EXTRACT</div>
+        <div class="step-body">要素を抜き出し、タグを付ける。</div>
+      </div>
+      <!-- Step 3 -->
+      <div class="step-display" id="step3">
+        <div class="step-label">Step 3</div>
+        <div class="step-title">SYNTHESIZE</div>
+        <div class="step-body">ぶつける。重ねる。共通項が、浮かぶ。</div>
+        <div class="category-tags">
+          <span class="cat-tag" style="border-color:var(--blue);color:var(--blue);">#商品開発</span>
+          <span class="cat-tag" style="border-color:var(--purple);color:var(--purple);">#CRM</span>
+          <span class="cat-tag" style="border-color:var(--green);color:var(--green);">#SNS</span>
+          <span class="cat-tag" style="border-color:var(--red);color:var(--red);">#CX</span>
+        </div>
+      </div>
+      <!-- Step 4 -->
+      <div class="step-display" id="step4">
+        <div class="step-label">Step 4</div>
+        <div class="step-title" style="color:var(--gold);">CENTER PIN</div>
+        <div class="step-body">これが、売れる理由だ。</div>
+      </div>
+      <!-- Step 5 -->
+      <div class="step-display" id="step5">
+        <div class="step-label">Step 5</div>
+        <div class="step-title">REVERSE ENGINEER</div>
+        <div class="step-body">センターピンから、逆算する。</div>
+        <div class="branches">
+          <div class="branch-item">戦略設計</div>
+          <div class="branch-item">優先度設計</div>
+          <div class="branch-item">統合実行</div>
+        </div>
+      </div>
+      <!-- Step 6 -->
+      <div class="step-display" id="step6">
+        <div class="step-label">Step 6</div>
+        <div class="step-title">CLOSING</div>
+        <div class="step-body">発見したセンターピンから、戦略も実行も逆算する。</div>
+        <div class="cta-area">
+          <a href="https://brainary.tokyo" class="cta-btn">DISCOVER MORE</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+  // --- Config ---
+  const isSP = window.innerWidth <= 768;
+
+  const CARD_DATA = [
+    // 商品系 (blue)
+    { label: '韓国コスメ', color: '#4a9eff', cat: 'product' },
+    { label: '美容液', color: '#4a9eff', cat: 'product' },
+    { label: '成分訴求', color: '#4a9eff', cat: 'product' },
+    { label: 'CICA', color: '#4a9eff', cat: 'product' },
+    { label: 'レチノール', color: '#4a9eff', cat: 'product' },
+    // CRM系 (purple)
+    { label: '定期2回目の壁', color: '#a855f7', cat: 'crm' },
+    { label: '同梱物', color: '#a855f7', cat: 'crm' },
+    { label: '解約理由', color: '#a855f7', cat: 'crm' },
+    { label: 'お届けサイクル', color: '#a855f7', cat: 'crm' },
+    { label: '休眠復帰', color: '#a855f7', cat: 'crm' },
+    // SNS系 (green)
+    { label: 'ガチレビュー', color: '#22c55e', cat: 'sns' },
+    { label: 'ビフォーアフター', color: '#22c55e', cat: 'sns' },
+    { label: 'Qoo10急上昇', color: '#22c55e', cat: 'sns' },
+    { label: '朝キレイ習慣', color: '#22c55e', cat: 'sns' },
+    // CX系 (red)
+    { label: '初回同梱体験', color: '#ef4444', cat: 'cx' },
+    { label: 'パケ買い', color: '#ef4444', cat: 'cx' },
+    { label: '開封ワクワク感', color: '#ef4444', cat: 'cx' },
+    { label: 'サンプル設計', color: '#ef4444', cat: 'cx' },
+    { label: 'お試し導線', color: '#ef4444', cat: 'cx' },
+  ];
+
+  const cardCount = isSP ? 10 : CARD_DATA.length;
+  const cardDataUsed = isSP ? CARD_DATA.slice(0, cardCount) : CARD_DATA;
+
+  // --- Elements ---
+  const progressBar = document.getElementById('progressBar');
+  const bgVideo = document.getElementById('bgVideo');
+  const canvas = document.getElementById('particleCanvas');
+  const ctx = canvas.getContext('2d');
+  const cardsContainer = document.getElementById('cardsContainer');
+  const centerGlow = document.getElementById('centerGlow');
+  const steps = [1,2,3,4,5,6].map(i => document.getElementById('step' + i));
+
+  // --- Canvas Resize ---
+  let W, H;
+  function resize() {
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', () => { resize(); isSP !== (window.innerWidth <= 768) && location.reload(); });
+
+  // --- Create Card Elements ---
+  const cardEls = [];
+  const cardPositions = [];
+  cardDataUsed.forEach((d, i) => {
+    const el = document.createElement('div');
+    el.className = 'info-card';
+    el.innerHTML = `<span class="card-dot" style="background:${d.color}"></span><span class="card-label">${d.label}</span>`;
+    cardsContainer.appendChild(el);
+    cardEls.push(el);
+
+    // Spread cards around the viewport
+    const angle = (i / cardCount) * Math.PI * 2 + Math.random() * 0.3;
+    const radius = isSP ? 0.28 : 0.34;
+    const cx = 0.5 + Math.cos(angle) * radius * (0.8 + Math.random() * 0.4);
+    const cy = 0.5 + Math.sin(angle) * radius * (0.7 + Math.random() * 0.6);
+    cardPositions.push({ x: cx, y: cy, ox: cx, oy: cy });
+  });
+
+  function positionCards() {
+    cardEls.forEach((el, i) => {
+      const p = cardPositions[i];
+      el.style.left = (p.x * W - el.offsetWidth / 2) + 'px';
+      el.style.top = (p.y * H - el.offsetHeight / 2) + 'px';
+    });
+  }
+
+  // --- Particles ---
+  const particles = [];
+  const PARTICLE_COUNT = isSP ? 120 : 300;
+
+  function initParticles() {
+    particles.length = 0;
+    for (let i = 0; i < PARTICLE_COUNT; i++) {
+      particles.push({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        vx: (Math.random() - 0.5) * 0.5,
+        vy: (Math.random() - 0.5) * 0.5,
+        r: Math.random() * 2 + 0.5,
+        color: ['#4a9eff','#a855f7','#22c55e','#ef4444','#f5c542'][Math.floor(Math.random() * 5)],
+        alpha: 0,
+        targetAlpha: 0.6 + Math.random() * 0.4,
+        converge: false,
+        origX: 0, origY: 0,
+      });
+    }
+  }
+  initParticles();
+
+  // --- Scroll State ---
+  let scrollProgress = 0;
+  let currentStep = -1;
+  let cardsDissolving = false;
+  let particlesVisible = false;
+  let particlesConverging = false;
+  let particlesDiverging = false;
+
+  // Step ranges (normalized 0-1)
+  const STEP_RANGES = [
+    { step: 0, start: 0.00, end: 0.05 },   // intro
+    { step: 1, start: 0.05, end: 0.20 },   // OBSERVE
+    { step: 2, start: 0.20, end: 0.35 },   // EXTRACT
+    { step: 3, start: 0.35, end: 0.50 },   // SYNTHESIZE
+    { step: 4, start: 0.50, end: 0.65 },   // CENTER PIN
+    { step: 5, start: 0.65, end: 0.80 },   // REVERSE ENGINEER
+    { step: 6, start: 0.80, end: 1.00 },   // CLOSING
+  ];
+
+  function getActiveStep(p) {
+    for (let i = STEP_RANGES.length - 1; i >= 0; i--) {
+      if (p >= STEP_RANGES[i].start) return STEP_RANGES[i].step;
+    }
+    return 0;
+  }
+
+  function onScroll() {
+    const spacer = document.querySelector('.scroll-spacer');
+    const maxScroll = spacer.scrollHeight - window.innerHeight;
+    scrollProgress = Math.min(1, Math.max(0, window.scrollY / maxScroll));
+    progressBar.style.width = (scrollProgress * 100) + '%';
+
+    const newStep = getActiveStep(scrollProgress);
+
+    if (newStep !== currentStep) {
+      currentStep = newStep;
+      updateStep();
+    }
+
+    updateCardMotion();
+    updateParticleTargets();
+  }
+
+  function updateStep() {
+    // Show/hide step displays
+    steps.forEach((el, i) => {
+      el.classList.toggle('active', i + 1 === currentStep);
+    });
+
+    // Video
+    if (currentStep >= 4) {
+      bgVideo.play().catch(() => {});
+      bgVideo.classList.add('visible');
+    } else {
+      bgVideo.classList.remove('visible');
+    }
+
+    // Cards visible in steps 1-3
+    const showCards = currentStep >= 1 && currentStep <= 2;
+    const groupCards = currentStep === 3;
+    cardsDissolving = currentStep >= 4;
+
+    cardEls.forEach((el, i) => {
+      if (cardsDissolving) {
+        el.classList.remove('visible');
+        el.classList.add('dissolving');
+      } else if (showCards || groupCards) {
+        el.classList.add('visible');
+        el.classList.remove('dissolving');
+      } else {
+        el.classList.remove('visible');
+        el.classList.remove('dissolving');
+      }
+    });
+
+    // Particles visible from step 3 onwards
+    particlesVisible = currentStep >= 3;
+    particlesConverging = currentStep === 4;
+    particlesDiverging = currentStep >= 5;
+
+    // Center pin glow
+    if (currentStep === 4) {
+      centerGlow.style.width = '600px';
+      centerGlow.style.height = '600px';
+    } else {
+      centerGlow.style.width = '0px';
+      centerGlow.style.height = '0px';
+    }
+  }
+
+  function updateCardMotion() {
+    if (currentStep === 3) {
+      // Group cards by category toward center
+      const catCenters = {
+        product: { x: 0.35, y: 0.35 },
+        crm:     { x: 0.65, y: 0.35 },
+        sns:     { x: 0.35, y: 0.65 },
+        cx:      { x: 0.65, y: 0.65 },
+      };
+      cardDataUsed.forEach((d, i) => {
+        const c = catCenters[d.cat];
+        const spread = 0.06;
+        const angle = (i * 1.3) % (Math.PI * 2);
+        cardPositions[i].x += (c.x + Math.cos(angle) * spread - cardPositions[i].x) * 0.05;
+        cardPositions[i].y += (c.y + Math.sin(angle) * spread - cardPositions[i].y) * 0.05;
+      });
+    } else if (currentStep <= 2) {
+      // Drift back to original
+      cardPositions.forEach(p => {
+        p.x += (p.ox - p.x) * 0.03;
+        p.y += (p.oy - p.y) * 0.03;
+      });
+    }
+    positionCards();
+  }
+
+  function updateParticleTargets() {
+    particles.forEach(p => {
+      if (!particlesVisible) {
+        p.targetAlpha = 0;
+      } else {
+        p.targetAlpha = 0.6 + Math.random() * 0.01;
+      }
+      p.converge = particlesConverging;
+    });
+  }
+
+  // --- Animation Loop ---
+  function animate() {
+    ctx.clearRect(0, 0, W, H);
+
+    particles.forEach(p => {
+      // Alpha lerp
+      p.alpha += (p.targetAlpha - p.alpha) * 0.02;
+
+      if (p.converge) {
+        // Move toward center
+        const tx = W / 2, ty = H / 2;
+        p.vx += (tx - p.x) * 0.0008;
+        p.vy += (ty - p.y) * 0.0008;
+        p.vx *= 0.97;
+        p.vy *= 0.97;
+      } else if (particlesDiverging) {
+        // Radiate outward from center
+        const dx = p.x - W / 2;
+        const dy = p.y - H / 2;
+        const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+        p.vx += (dx / dist) * 0.02;
+        p.vy += (dy / dist) * 0.02;
+        p.vx *= 0.99;
+        p.vy *= 0.99;
+      } else {
+        // Gentle drift
+        p.vx += (Math.random() - 0.5) * 0.02;
+        p.vy += (Math.random() - 0.5) * 0.02;
+        p.vx *= 0.99;
+        p.vy *= 0.99;
+      }
+
+      p.x += p.vx;
+      p.y += p.vy;
+
+      // Wrap
+      if (p.x < -10) p.x = W + 10;
+      if (p.x > W + 10) p.x = -10;
+      if (p.y < -10) p.y = H + 10;
+      if (p.y > H + 10) p.y = -10;
+
+      if (p.alpha < 0.01) return;
+
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = p.color;
+      ctx.globalAlpha = p.alpha;
+      ctx.fill();
+    });
+
+    // Draw connections when converging
+    if (particlesConverging || currentStep === 3) {
+      ctx.globalAlpha = 0.08;
+      ctx.strokeStyle = '#f5c542';
+      ctx.lineWidth = 0.5;
+      for (let i = 0; i < particles.length; i++) {
+        if (particles[i].alpha < 0.1) continue;
+        for (let j = i + 1; j < particles.length; j++) {
+          if (particles[j].alpha < 0.1) continue;
+          const dx = particles[i].x - particles[j].x;
+          const dy = particles[i].y - particles[j].y;
+          const dist = dx * dx + dy * dy;
+          if (dist < 4000) {
+            ctx.beginPath();
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.stroke();
+          }
+        }
+      }
+    }
+
+    ctx.globalAlpha = 1;
+    requestAnimationFrame(animate);
+  }
+
+  // --- Init ---
+  positionCards();
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+  animate();
+})();
+</script>
+
+</body>
+</html>

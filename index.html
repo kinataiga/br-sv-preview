@@ -4,607 +4,149 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<title>Plan D - 抽象粒子×キーワード融合型 | Brainary SV</title>
+<title>BR公式サイト SV演出案 - A/B/C/D比較</title>
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:smooth}
 body{
   font-family:'Noto Sans JP','Helvetica Neue',Arial,sans-serif;
   background:#0a0a1a;
   color:#fff;
-  overflow-x:hidden;
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
 }
-.plan-label{
-  position:fixed;top:12px;right:16px;z-index:200;
-  font-size:11px;letter-spacing:.15em;
-  color:rgba(180,210,255,.5);
-  background:rgba(10,10,26,.8);
-  padding:6px 14px;border-radius:20px;
-  border:1px solid rgba(80,120,255,.15);
+.container{
+  max-width:800px;
+  width:100%;
+  padding:40px 24px;
 }
-.scroll-spacer{height:1300vh;position:relative}
-.sticky-wrap{
-  position:sticky;top:0;
-  width:100%;height:100vh;
-  overflow:hidden;
-  background:#0a0a1a;
+h1{
+  font-size:clamp(18px,3vw,28px);
+  font-weight:300;
+  letter-spacing:.1em;
+  color:rgba(255,255,255,.9);
+  margin-bottom:8px;
 }
-#bgVideo{
-  position:absolute;inset:0;
-  width:100%;height:100%;
-  object-fit:cover;z-index:0;opacity:.3;
-}
-.video-overlay{
-  position:absolute;inset:0;z-index:1;
-  background:radial-gradient(ellipse at center, rgba(10,10,26,.4) 0%, rgba(10,10,26,.8) 70%);
-  transition:background .8s ease;
-}
-canvas#mainCanvas{
-  position:absolute;inset:0;
-  width:100%;height:100%;
-  z-index:2;
-}
-
-/* Text overlays */
-.text-overlay{
-  position:absolute;inset:0;
-  display:flex;align-items:center;justify-content:center;
-  flex-direction:column;gap:14px;
-  z-index:3;opacity:0;pointer-events:none;
-  transition:opacity 1s cubic-bezier(.23,1,.32,1);
-}
-.text-overlay.active{opacity:1}
-.step-label{
-  font-size:clamp(10px,1.2vw,13px);
-  letter-spacing:.35em;
-  color:rgba(140,180,255,.55);
-}
-.step-copy{
-  font-size:clamp(14px,2.2vw,26px);
-  font-weight:300;letter-spacing:.08em;line-height:2;
-  text-align:center;color:rgba(255,255,255,.88);
-  max-width:680px;padding:0 24px;
-}
-.step-copy .hl{color:rgba(180,210,255,1);font-weight:400}
-#stepCenterPin .step-copy{
-  font-size:clamp(22px,3.4vw,40px);
-  font-weight:400;letter-spacing:.12em;
-}
-.t-cta{
-  display:inline-block;margin-top:20px;
-  font-size:clamp(11px,1.2vw,14px);
-  letter-spacing:.2em;
+.subtitle{
+  font-size:clamp(11px,1.4vw,14px);
   color:rgba(140,180,255,.6);
+  letter-spacing:.2em;
+  margin-bottom:48px;
+}
+.cards{
+  display:flex;flex-direction:column;gap:20px;
+}
+.card{
+  display:block;
+  padding:28px 32px;
+  border:1px solid rgba(100,140,255,.15);
+  border-radius:12px;
+  background:rgba(20,22,40,.5);
   text-decoration:none;
-  border-bottom:1px solid rgba(140,180,255,.2);
-  padding-bottom:3px;
-  transition:color .3s, border-color .3s;
+  color:inherit;
+  transition:border-color .3s, background .3s, transform .2s;
 }
-.t-cta:hover{color:rgba(200,220,255,.9);border-color:rgba(200,220,255,.4)}
-.progress-bar{
-  position:fixed;top:0;left:0;height:2px;
-  background:linear-gradient(90deg,rgba(100,140,255,.5),rgba(160,100,255,.5));
-  z-index:100;transition:width .1s linear;
+.card:hover{
+  border-color:rgba(140,180,255,.4);
+  background:rgba(30,34,60,.6);
+  transform:translateY(-2px);
 }
-@media(max-width:768px){
-  .step-copy{font-size:15px;line-height:1.9;padding:0 20px}
-  #stepCenterPin .step-copy{font-size:22px}
-  #stepReverse{padding-top:18vh}
-  #stepCenterPin{padding-top:12vh}
+.card-label{
+  font-size:11px;
+  letter-spacing:.3em;
+  color:rgba(140,180,255,.7);
+  margin-bottom:8px;
+}
+.card-title{
+  font-size:clamp(16px,2.2vw,22px);
+  font-weight:400;
+  letter-spacing:.06em;
+  margin-bottom:8px;
+}
+.card-desc{
+  font-size:clamp(12px,1.4vw,14px);
+  font-weight:300;
+  color:rgba(200,210,230,.6);
+  line-height:1.7;
+}
+.card-tag{
+  display:inline-block;
+  margin-top:12px;
+  font-size:10px;
+  letter-spacing:.15em;
+  color:rgba(140,180,255,.5);
+  border:1px solid rgba(100,140,255,.2);
+  padding:3px 10px;
+  border-radius:12px;
+}
+.recommend{
+  border-color:rgba(100,180,140,.3);
+  color:rgba(100,200,150,.7);
+}
+.divider{
+  width:40px;height:1px;
+  background:rgba(100,140,255,.2);
+  margin:32px 0;
+}
+.note{
+  font-size:12px;
+  color:rgba(160,170,200,.4);
+  line-height:1.7;
+  letter-spacing:.03em;
 }
 </style>
 </head>
 <body>
+<div class="container">
+  <h1>BR公式サイト セカンドビュー演出案</h1>
+  <p class="subtitle">TOP PAGE &mdash; SCENE 2 ANIMATION PROPOSALS</p>
 
-<div class="plan-label">PLAN D : Abstract + Keyword</div>
-<div class="progress-bar" id="progressBar"></div>
+  <div class="cards">
+    <a href="plan-a.html" class="card">
+      <p class="card-label">PLAN A</p>
+      <p class="card-title">パーティクル＋カード混合型</p>
+      <p class="card-desc">
+        前半は具体的なカードUI（SNS投稿・分析レポート等）、後半はパーティクル表現に切り替わる。<br>
+        「具象→抽象」への思考の飛躍を、カード→粒子の変換で直接的に体感させる。
+      </p>
+    </a>
 
-<div class="scroll-spacer">
-  <div class="sticky-wrap">
-    <video id="bgVideo" autoplay muted loop playsinline>
-      <source src="https://brainary.tokyo/wp-content/themes/brainary/assets/imgs/mv4.mp4" type="video/mp4">
-    </video>
-    <div class="video-overlay" id="videoOverlay"></div>
-    <canvas id="mainCanvas"></canvas>
+    <a href="plan-b.html" class="card">
+      <p class="card-label">PLAN B</p>
+      <p class="card-title">フルアブストラクト型</p>
+      <p class="card-desc">
+        全ステップを光の粒子・ノード・ラインで統一。<br>
+        散在する粒子が色分け→クラスタリング→中央に収束する抽象的な世界観。知性と洞察の印象を最大化。
+      </p>
+    </a>
 
-    <!-- Step 1: Observe -->
-    <div class="text-overlay" id="stepObserve">
-      <p class="step-label">STEP 01 &mdash; OBSERVE</p>
-      <p class="step-copy" style="font-size:clamp(12px,1.5vw,17px);color:rgba(220,230,240,.6)">日常の中の、無数の事象を観察する。</p>
-    </div>
+    <a href="plan-c.html" class="card">
+      <p class="card-label">PLAN C</p>
+      <p class="card-title">タイポグラフィ＋ミニマルモーション型</p>
+      <p class="card-desc">
+        カードやパーティクルではなく、テキスト（キーワード・タグ）のみでプロセスを表現。<br>
+        CSS中心の軽量実装。読み込み速度・SP対応に最も優れる。
+      </p>
+    </a>
 
-    <!-- Step 2: Tag -->
-    <div class="text-overlay" id="stepTag">
-      <p class="step-label">STEP 02 &mdash; EXTRACT</p>
-      <p class="step-copy">要素を抜き出し、<br>タグを付ける。</p>
-    </div>
-
-    <!-- Step 3: Collide -->
-    <div class="text-overlay" id="stepCollide">
-      <p class="step-label">STEP 03 &mdash; SYNTHESIZE</p>
-      <p class="step-copy">ぶつける。重ねる。<br><span class="hl">共通項</span>が、浮かぶ。</p>
-    </div>
-
-    <!-- Step 4: Center Pin -->
-    <div class="text-overlay" id="stepCenterPin">
-      <p class="step-label">&mdash; CENTER PIN &mdash;</p>
-      <p class="step-copy">これが、売れる理由だ。</p>
-    </div>
-
-    <!-- Step 5: Reverse -->
-    <div class="text-overlay" id="stepReverse">
-      <p class="step-label">STEP 05 &mdash; REVERSE ENGINEER</p>
-      <p class="step-copy">センターピンから、逆算する。</p>
-    </div>
-
-    <!-- Step 6: Closing -->
-    <div class="text-overlay" id="stepClosing">
-      <p class="step-copy">発見したセンターピンから、<br>戦略も実行も逆算する。</p>
-      <a href="#" class="t-cta">私たちの思考を知る &rarr;</a>
-    </div>
+    <a href="plan-d.html" class="card">
+      <p class="card-label">PLAN D</p>
+      <p class="card-title">抽象粒子 × キーワード融合型</p>
+      <p class="card-desc">
+        B案の抽象的な粒子表現をベースに、C案のキーワード・タグがうっすら重なる。<br>
+        抽象度を保ちつつ「何を観察し、何を抽出しているか」が伝わるハイブリッド。
+      </p>
+      <span class="card-tag recommend">RECOMMENDED</span>
+    </a>
   </div>
+
+  <div class="divider"></div>
+  <p class="note">
+    * 各プロトタイプはスクロールで操作します。上部のプログレスバーで進行度を確認できます。<br>
+    * 背景動画はbrainary.tokyoから読み込んでいます。<br>
+    * 長谷川プロセス：観察→タグ付け→比較→共通項抽出→センターピン→逆算設計
+  </p>
 </div>
-
-<script>
-/* ═══════════════════════════════════════════
-   Plan D: B-style Abstract Particles
-   with C-style Keyword overlay
-   ═══════════════════════════════════════════ */
-
-const canvas = document.getElementById('mainCanvas');
-const ctx = canvas.getContext('2d');
-let W, H;
-
-function resize() {
-  const dpr = devicePixelRatio;
-  W = canvas.offsetWidth;
-  H = canvas.offsetHeight;
-  canvas.width = W * dpr;
-  canvas.height = H * dpr;
-  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-}
-resize();
-window.addEventListener('resize', resize);
-
-function getProgress() {
-  const spacer = document.querySelector('.scroll-spacer');
-  const rect = spacer.getBoundingClientRect();
-  const total = spacer.scrollHeight - window.innerHeight;
-  return Math.max(0, Math.min(1, -rect.top / total));
-}
-function ease(t) { return t < 0.5 ? 2*t*t : 1 - Math.pow(-2*t+2,2)/2; }
-function range(p, s, e) { return ease(Math.max(0, Math.min(1, (p-s)/(e-s)))); }
-
-/* ── Categories & Keywords ── */
-const CATS = [
-  { key: 'product', color: [74, 127, 255],  keywords: ['韓国コスメ', '美容液', '成分訴求', 'CICA', 'レチノール'] },
-  { key: 'crm',     color: [134, 100, 255], keywords: ['定期2回目の壁', '同梱物', '解約理由', 'お届けサイクル', '休眠復帰'] },
-  { key: 'sns',     color: [61, 191, 153],  keywords: ['ガチレビュー', 'ビフォーアフター', 'Qoo10急上昇', '朝キレイ習慣'] },
-  { key: 'cx',      color: [255, 132, 100], keywords: ['初回同梱体験', 'パケ買い', '開封ワクワク感', 'サンプル設計', 'お試し導線'] },
-];
-
-/* ── Responsive helpers ── */
-const isSP = () => window.innerWidth <= 768;
-
-/* ── Nodes: each is a particle + keyword ── */
-const nodes = [];
-const TOTAL_PC = 60;
-const TOTAL_SP = 36;
-
-function buildNodes() {
-  nodes.length = 0;
-  const total = isSP() ? TOTAL_SP : TOTAL_PC;
-  const sp = isSP();
-  CATS.forEach((cat, ci) => {
-    const count = sp ? 9 : (ci < 2 ? 17 : 13);
-    for (let i = 0; i < count && nodes.length < total; i++) {
-      const angle = Math.random() * Math.PI * 2;
-      const maxDist = sp ? Math.min(W, H) * 0.28 : Math.min(W, H) * 0.38;
-      const dist = (sp ? 60 : 100) + Math.random() * maxDist;
-      const kw = cat.keywords[i % cat.keywords.length];
-
-      nodes.push({
-        scatterX: Math.cos(angle) * dist + (Math.random() - 0.5) * (sp ? 40 : 80),
-        scatterY: Math.sin(angle) * dist + (Math.random() - 0.5) * (sp ? 40 : 80),
-        cat: ci,
-        color: cat.color,
-        keyword: kw,
-        r: sp ? (2 + Math.random() * 2.5) : (2.5 + Math.random() * 3.5),
-        phase: Math.random() * Math.PI * 2,
-        driftSpeed: 0.15 + Math.random() * 0.3,
-        driftAmp: sp ? (5 + Math.random() * 8) : (8 + Math.random() * 15),
-        orbitR: sp ? (15 + Math.random() * 40) : (25 + Math.random() * 70),
-        orbitSpeed: 0.2 + Math.random() * 0.4,
-        showLabel: i < (sp ? 2 : 3),
-      });
-    }
-  });
-}
-buildNodes();
-
-/* ── Cluster centers (for grouping phase) ── */
-function getClusterCenters() {
-  if (isSP()) {
-    // SP: tighter clusters, avoid edges
-    return [
-      { x: 0.30, y: 0.22 },
-      { x: 0.70, y: 0.22 },
-      { x: 0.30, y: 0.78 },
-      { x: 0.70, y: 0.78 },
-    ];
-  }
-  return [
-    { x: 0.30, y: 0.32 },
-    { x: 0.70, y: 0.32 },
-    { x: 0.30, y: 0.68 },
-    { x: 0.70, y: 0.68 },
-  ];
-}
-
-/* ── Branches ── */
-function getBranches() {
-  if (isSP()) {
-    // SP: top branch higher, bottom two wider to avoid text overlap
-    return [
-      { label: '戦略設計', angle: -Math.PI / 2 },
-      { label: '優先度設計', angle: Math.PI / 5 },
-      { label: '統合実行', angle: Math.PI * 4 / 5 },
-    ];
-  }
-  return [
-    { label: '戦略設計', angle: -Math.PI / 2 },
-    { label: '優先度設計', angle: -Math.PI / 2 + Math.PI * 2 / 3 },
-    { label: '統合実行', angle: -Math.PI / 2 - Math.PI * 2 / 3 },
-  ];
-}
-
-/* ── Text scenes ── */
-const scenes = {
-  observe:   { el: document.getElementById('stepObserve'),   show: [0.02, 0.12] },
-  tag:       { el: document.getElementById('stepTag'),       show: [0.17, 0.28] },
-  collide:   { el: document.getElementById('stepCollide'),   show: [0.36, 0.48] },
-  centerpin: { el: document.getElementById('stepCenterPin'), show: [0.53, 0.64] },
-  reverse:   { el: document.getElementById('stepReverse'),   show: [0.70, 0.82] },
-  closing:   { el: document.getElementById('stepClosing'),   show: [0.87, 1.0] },
-};
-
-const videoOverlay = document.getElementById('videoOverlay');
-const progressBar = document.getElementById('progressBar');
-const startTime = performance.now();
-
-function animate() {
-  const time = (performance.now() - startTime) / 1000;
-  const p = getProgress();
-  const cx = W / 2;
-  const cy = H / 2;
-
-  progressBar.style.width = (p * 100) + '%';
-
-  // Video overlay
-  const textPhase = p > 0.50;
-  const dark = textPhase ? 0.82 : 0.6;
-  videoOverlay.style.background = `radial-gradient(ellipse at center, rgba(10,10,26,${dark * 0.45}) 0%, rgba(10,10,26,${dark}) 70%)`;
-
-  ctx.clearRect(0, 0, W, H);
-
-  /* ── Phase calculations ── */
-  const appear     = range(p, 0.00, 0.08);   // Nodes appear (neutral color, scattered)
-  const colorize   = range(p, 0.13, 0.22);   // Nodes get category colors + keywords show
-  const cluster    = range(p, 0.25, 0.38);   // Same-color nodes cluster together
-  const attract    = range(p, 0.34, 0.46);   // Lines connect between clusters
-  const converge   = range(p, 0.46, 0.56);   // All converge to center
-  const pinForm    = range(p, 0.52, 0.62);   // Center pin forms
-  const pinFlash   = range(p, 0.53, 0.57);   // Flash
-  const branchGrow = range(p, 0.68, 0.82);   // Branches extend
-  const fadeAll    = range(p, 0.84, 0.90);   // Fade for closing
-
-  const globalA = appear * (1 - fadeAll);
-  if (globalA < 0.005) { requestAnimationFrame(animate); return; }
-
-  const sp = isSP();
-  const clusterCenters = getClusterCenters();
-
-  /* ══════════════════════════════════════
-     Connection lines (same-category)
-     ══════════════════════════════════════ */
-  if (attract > 0 && converge < 1) {
-    ctx.save();
-    const lineA = attract * (1 - converge) * 0.25 * globalA;
-    const lineDist = sp ? 90 : 130;
-
-    CATS.forEach((cat, ci) => {
-      const catNodes = nodes.filter(n => n.cat === ci);
-      const cc = clusterCenters[ci];
-      const ccx = cc.x * W, ccy = cc.y * H;
-
-      // Get current positions for these nodes
-      const positions = catNodes.map(n => {
-        const sx = cx + n.scatterX + Math.sin(time * n.driftSpeed + n.phase) * n.driftAmp * (1 - cluster * 0.7);
-        const sy = cy + n.scatterY + Math.cos(time * n.driftSpeed + n.phase) * n.driftAmp * 0.6 * (1 - cluster * 0.7);
-        const gx = ccx + Math.cos(n.phase + time * n.orbitSpeed) * n.orbitR * 0.4;
-        const gy = ccy + Math.sin(n.phase + time * n.orbitSpeed) * n.orbitR * 0.4;
-        return {
-          x: sx + (gx - sx) * cluster,
-          y: sy + (gy - sy) * cluster,
-        };
-      });
-
-      // Draw lines between nearby nodes in same category
-      for (let i = 0; i < positions.length; i++) {
-        for (let j = i + 1; j < positions.length; j++) {
-          const dist = Math.hypot(positions[j].x - positions[i].x, positions[j].y - positions[i].y);
-          if (dist < lineDist) {
-            const la = (1 - dist / lineDist) * lineA;
-            ctx.strokeStyle = `rgba(${cat.color[0]},${cat.color[1]},${cat.color[2]},${la})`;
-            ctx.lineWidth = 0.5;
-            ctx.beginPath();
-            ctx.moveTo(positions[i].x, positions[i].y);
-            ctx.lineTo(positions[j].x, positions[j].y);
-            ctx.stroke();
-          }
-        }
-      }
-
-      // Cluster center glow
-      if (cluster > 0.3) {
-        const glowR = sp ? 45 : 70;
-        const ga = (cluster - 0.3) / 0.7 * (1 - converge) * globalA * 0.1;
-        const grad = ctx.createRadialGradient(ccx, ccy, 0, ccx, ccy, glowR);
-        grad.addColorStop(0, `rgba(${cat.color[0]},${cat.color[1]},${cat.color[2]},${ga})`);
-        grad.addColorStop(1, `rgba(${cat.color[0]},${cat.color[1]},${cat.color[2]},0)`);
-        ctx.fillStyle = grad;
-        ctx.beginPath();
-        ctx.arc(ccx, ccy, glowR, 0, Math.PI * 2);
-        ctx.fill();
-      }
-    });
-    ctx.restore();
-  }
-
-  /* ── Cross-cluster lines (synthesis) ── */
-  if (attract > 0.5 && converge < 1) {
-    ctx.save();
-    const crossA = (attract - 0.5) * 2 * (1 - converge) * 0.12 * globalA;
-    ctx.strokeStyle = `rgba(180,200,255,${crossA})`;
-    ctx.lineWidth = 0.3;
-    for (let i = 0; i < clusterCenters.length; i++) {
-      for (let j = i + 1; j < clusterCenters.length; j++) {
-        const a = clusterCenters[i], b = clusterCenters[j];
-        ctx.beginPath();
-        ctx.moveTo(a.x * W, a.y * H);
-        ctx.lineTo(b.x * W, b.y * H);
-        ctx.stroke();
-      }
-    }
-    ctx.restore();
-  }
-
-  /* ══════════════════════════════════════
-     Nodes (particle + keyword)
-     ══════════════════════════════════════ */
-  nodes.forEach((node) => {
-    const cat = CATS[node.cat];
-    const cc = clusterCenters[node.cat];
-    const ccx = cc.x * W, ccy = cc.y * H;
-
-    // Drift (weakens as clustering progresses)
-    const driftMul = 1 - cluster * 0.7 - converge * 0.3;
-    const drift  = Math.sin(time * node.driftSpeed + node.phase) * node.driftAmp * driftMul;
-    const driftY = Math.cos(time * node.driftSpeed * 0.7 + node.phase) * node.driftAmp * 0.6 * driftMul;
-
-    // Phase 1: scattered
-    const sx = cx + node.scatterX + drift;
-    const sy = cy + node.scatterY + driftY;
-
-    // Phase 2: clustered (orbit around category center)
-    const gx = ccx + Math.cos(node.phase + time * node.orbitSpeed) * node.orbitR * 0.4;
-    const gy = ccy + Math.sin(node.phase + time * node.orbitSpeed) * node.orbitR * 0.4;
-
-    // Phase 3: converge to center
-    const centerDrift = Math.sin(time * 0.6 + node.phase) * 6 * (1 - pinForm);
-
-    let x, y;
-    const preX = sx + (gx - sx) * cluster;
-    const preY = sy + (gy - sy) * cluster;
-    x = preX + (cx + centerDrift - preX) * converge;
-    y = preY + (cy + Math.cos(time * 0.5 + node.phase) * 6 * (1 - pinForm) - preY) * converge;
-
-    // Color: neutral → category color
-    const nr = 170, ng = 180, nb = 200;
-    const cr = nr + (cat.color[0] - nr) * colorize;
-    const cg = ng + (cat.color[1] - ng) * colorize;
-    const cb = nb + (cat.color[2] - nb) * colorize;
-
-    // Radius & opacity
-    const radius = node.r * (1 - converge * 0.6);
-    const alpha = globalA * (0.55 + colorize * 0.2) * (1 - converge * 0.5);
-
-    if (alpha < 0.01 || radius < 0.3) return;
-
-    ctx.save();
-    ctx.globalAlpha = alpha;
-
-    // Particle glow
-    ctx.beginPath();
-    ctx.arc(x, y, radius * 2.5, 0, Math.PI * 2);
-    ctx.fillStyle = `rgba(${cr},${cg},${cb},0.06)`;
-    ctx.fill();
-
-    // Particle core
-    ctx.beginPath();
-    ctx.arc(x, y, radius, 0, Math.PI * 2);
-    ctx.fillStyle = `rgba(${cr},${cg},${cb},0.7)`;
-    ctx.fill();
-
-    // ── Keyword label (appears during tagging phase) ──
-    if (node.showLabel && colorize > 0.2 && converge < 0.8) {
-      const labelAlpha = ((colorize - 0.2) / 0.8) * (1 - converge) * 0.75;
-      ctx.globalAlpha = alpha * labelAlpha;
-      ctx.font = sp ? '300 8px "Noto Sans JP", sans-serif' : '300 10px "Noto Sans JP", sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillStyle = `rgba(${cr},${cg},${cb},0.85)`;
-      ctx.fillText(node.keyword, x, y - radius - (sp ? 4 : 6));
-    }
-
-    ctx.restore();
-  });
-
-  /* ── Category tag labels (appear near cluster centers during grouping) ── */
-  if (cluster > 0.3 && converge < 0.8) {
-    const tagA = (cluster - 0.3) / 0.7 * (1 - converge) * globalA * 0.7;
-    ctx.save();
-    ctx.globalAlpha = tagA;
-    ctx.font = sp ? '300 9px "Noto Sans JP", sans-serif' : '300 11px "Noto Sans JP", sans-serif';
-    ctx.textAlign = 'center';
-    const tagLabels = ['#商品開発', '#CRM', '#SNS', '#CX'];
-    const tagOffset = sp ? 55 : 85;
-    CATS.forEach((cat, ci) => {
-      const cc = clusterCenters[ci];
-      ctx.fillStyle = `rgba(${cat.color[0]},${cat.color[1]},${cat.color[2]},0.7)`;
-      ctx.fillText(tagLabels[ci], cc.x * W, cc.y * H - tagOffset);
-    });
-    ctx.restore();
-  }
-
-  /* ══════════════════════════════════════
-     Flash + Center Pin
-     ══════════════════════════════════════ */
-  if (pinFlash > 0 && pinFlash < 1) {
-    const fa = Math.sin(pinFlash * Math.PI) * 0.3;
-    const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, Math.min(W, H) * 0.5);
-    grad.addColorStop(0, `rgba(210,225,255,${fa})`);
-    grad.addColorStop(0.3, `rgba(180,200,255,${fa * 0.3})`);
-    grad.addColorStop(1, 'rgba(180,200,255,0)');
-    ctx.fillStyle = grad;
-    ctx.fillRect(0, 0, W, H);
-  }
-
-  if (pinForm > 0 && globalA > 0) {
-    ctx.save();
-    ctx.globalAlpha = globalA;
-
-    const pulse = Math.sin(time * 1.5) * (sp ? 2 : 3);
-    const coreR = sp ? (15 + pinForm * 20) : (20 + pinForm * 30);
-
-    // Outer glow rings
-    for (let ring = 3; ring >= 1; ring--) {
-      const rr = coreR + ring * (sp ? 12 : 18) + pulse * ring * 0.4;
-      ctx.beginPath();
-      ctx.arc(cx, cy, rr, 0, Math.PI * 2);
-      ctx.strokeStyle = `rgba(140,180,255,${pinForm * 0.07 / ring})`;
-      ctx.lineWidth = 0.5;
-      ctx.stroke();
-    }
-
-    // Core glow
-    const glowGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, coreR + 25);
-    glowGrad.addColorStop(0, `rgba(180,210,255,${pinForm * 0.22})`);
-    glowGrad.addColorStop(0.5, `rgba(140,180,255,${pinForm * 0.08})`);
-    glowGrad.addColorStop(1, 'rgba(140,180,255,0)');
-    ctx.fillStyle = glowGrad;
-    ctx.beginPath();
-    ctx.arc(cx, cy, coreR + 25, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Diamond pin
-    const pinH = (sp ? 35 : 50) * pinForm;
-    const pinW = (sp ? 8 : 11) * pinForm;
-    ctx.beginPath();
-    ctx.moveTo(cx, cy - pinH);
-    ctx.lineTo(cx + pinW, cy);
-    ctx.lineTo(cx, cy + pinH * 0.3);
-    ctx.lineTo(cx - pinW, cy);
-    ctx.closePath();
-    ctx.fillStyle = `rgba(180,210,255,${pinForm * 0.14})`;
-    ctx.fill();
-    ctx.strokeStyle = `rgba(200,225,255,${pinForm * 0.65})`;
-    ctx.lineWidth = 1.2;
-    ctx.stroke();
-
-    // Core dot
-    ctx.beginPath();
-    ctx.arc(cx, cy, 5, 0, Math.PI * 2);
-    ctx.fillStyle = `rgba(235,242,255,${pinForm * 0.9})`;
-    ctx.fill();
-
-    ctx.restore();
-  }
-
-  /* ══════════════════════════════════════
-     Branches
-     ══════════════════════════════════════ */
-  if (branchGrow > 0 && globalA > 0) {
-    ctx.save();
-    ctx.globalAlpha = globalA;
-    const lineLen = sp ? Math.min(W, H) * 0.14 : Math.min(W, H) * 0.19;
-    const circR = sp ? 22 : 28;
-    const currentBranches = getBranches();
-
-    currentBranches.forEach((br, i) => {
-      const delay = i * 0.12;
-      const lp = ease(Math.max(0, Math.min(1, (branchGrow - delay) / (1 - delay))));
-      const circAppear = ease(Math.max(0, Math.min(1, (branchGrow - delay - 0.3) / 0.5)));
-      if (lp <= 0) return;
-
-      const endX = cx + Math.cos(br.angle) * lineLen * lp;
-      const endY = cy + Math.sin(br.angle) * lineLen * lp;
-      const fullX = cx + Math.cos(br.angle) * lineLen;
-      const fullY = cy + Math.sin(br.angle) * lineLen;
-
-      ctx.setLineDash([4, 4]);
-      ctx.strokeStyle = `rgba(140,180,255,${lp * 0.45})`;
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.moveTo(cx, cy);
-      ctx.lineTo(endX, endY);
-      ctx.stroke();
-      ctx.setLineDash([]);
-
-      if (circAppear > 0) {
-        ctx.beginPath();
-        ctx.arc(fullX, fullY, circR * circAppear, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(120,160,255,${circAppear * 0.07})`;
-        ctx.fill();
-        ctx.strokeStyle = `rgba(160,200,255,${circAppear * 0.45})`;
-        ctx.lineWidth = 0.8;
-        ctx.stroke();
-
-        if (circAppear > 0.4) {
-          const la = (circAppear - 0.4) / 0.6;
-          ctx.fillStyle = `rgba(200,220,255,${la * 0.75})`;
-          ctx.font = sp ? '300 9px "Noto Sans JP", sans-serif' : '300 11px "Noto Sans JP", sans-serif';
-          ctx.textAlign = 'center';
-          ctx.fillText(br.label, fullX, fullY + 4);
-        }
-      }
-    });
-    ctx.restore();
-  }
-
-  /* ── Ambient particles ── */
-  if (globalA > 0) {
-    ctx.save();
-    ctx.globalAlpha = 0.12 * globalA;
-    for (let i = 0; i < 20; i++) {
-      const ax = (Math.sin(time * 0.08 + i * 1.9) * 0.5 + 0.5) * W;
-      const ay = (Math.cos(time * 0.06 + i * 2.5) * 0.5 + 0.5) * H;
-      ctx.beginPath();
-      ctx.arc(ax, ay, 0.8, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(140,170,255,0.4)';
-      ctx.fill();
-    }
-    ctx.restore();
-  }
-
-  /* ── Text scenes ── */
-  Object.values(scenes).forEach(s => {
-    s.el.classList.toggle('active', p >= s.show[0] && p <= s.show[1]);
-  });
-
-  requestAnimationFrame(animate);
-}
-
-animate();
-</script>
 </body>
 </html>
